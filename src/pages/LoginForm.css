@@ -1,0 +1,14 @@
+@keyframes rise-up {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-rise {
+  animation: rise-up 0.8s ease-out forwards;
+}
