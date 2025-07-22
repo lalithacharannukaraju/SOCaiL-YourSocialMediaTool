@@ -1,8 +1,8 @@
 SOCaiL - YourSocialMediaTool
 
-============================
+
 How to Run This Application
-============================
+
 
 1. Backend Setup
 ----------------
