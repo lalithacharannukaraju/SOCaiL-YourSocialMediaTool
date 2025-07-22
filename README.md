@@ -3,9 +3,9 @@ SOCaiL - YourSocialMediaTool
 
 How to Run This Application
 
-
-1. Backend Setup
 ----------------
+1. Backend Setup
+
 - Open a terminal and navigate to the Backend directory:
 
     cd Backend
@@ -22,9 +22,9 @@ How to Run This Application
 
   (The backend will run on http://localhost:5000 by default)
 
-
-2. Frontend Setup
 -----------------
+2. Frontend Setup
+
 - Open a new terminal and navigate to the project root (where package.json is located):
 
     cd <project-root>
@@ -39,9 +39,9 @@ How to Run This Application
 
   (The frontend will run on http://localhost:5173 by default)
 
-
-3. Access the Application
 -------------------------
+3. Access the Application
+
 - Open your browser and go to:
 
     http://localhost:5173
@@ -49,10 +49,11 @@ How to Run This Application
 - The frontend will communicate with the backend at http://localhost:5000
 
 
-4. Python Models & Scrapers
 --------------------------------------
+4. Python Models & Scrapers
+   
 - If you want to run the Gemini model or scrapers, run the relevant Python scripts in the Models directory (e.g., gemini.py, scrape.py) using Python 3.
 
 - Go to /Backend/Models/ and execute 'python gemini.py' for model and 'python scrape.py' for scrapper
 
-============================
+
