@@ -13,10 +13,19 @@ const router = express.Router();
 
 router.post("/query", authenticateToken, processQuery);
 router.get("/chat-history", authenticateToken, getChatHistory);
-// Twitter Trends Endpoint
+// Twitter Trends Endpoint - reads from Models/twitter_scraper.csv
 router.get('/twitter-trends', (req, res) => {
   const results = [];
-  const filePath = path.join(__dirname, '../../twitter_scraper.csv');
+  // Try Models/twitter_scraper.csv first, fallback to root
+  let filePath = path.join(__dirname, '../../Models/twitter_scraper.csv');
+  if (!fs.existsSync(filePath)) {
+    filePath = path.join(__dirname, '../../twitter_scraper.csv');
+  }
+  
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: 'Twitter trends CSV file not found' });
+  }
+  
   fs.createReadStream(filePath)
     .pipe(csv())
     .on('data', (data) => results.push(data))
@@ -24,6 +33,7 @@ router.get('/twitter-trends', (req, res) => {
       res.json(results);
     })
     .on('error', (err) => {
+      console.error('Error reading CSV:', err);
       res.status(500).json({ error: 'Failed to read CSV', details: err.message });
     });
 });

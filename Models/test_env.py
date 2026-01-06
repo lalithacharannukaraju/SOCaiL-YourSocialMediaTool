@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+backend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Backend')
 env_path = os.path.join(backend_dir, '.env')
 print("Looking for .env at:", env_path)
 print("File exists:", os.path.exists(env_path))

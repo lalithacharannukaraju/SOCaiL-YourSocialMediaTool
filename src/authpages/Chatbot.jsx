@@ -62,14 +62,40 @@ function Chatbot() {
     try {
       const token = localStorage.getItem("token");
       const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+      // Use the backend chat endpoint that calls the Gemini RAG service and logs chats
       const res = await axios.post(
         `${BACKEND_URL}/query`,
         { query: trimmed },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
       );
       setMessages((msgs) => [...msgs, { sender: "bot", text: res.data.response }]);
     } catch (err) {
-      setMessages((msgs) => [...msgs, { sender: "bot", text: "Sorry, something went wrong. Please try again." }]);
+      console.error("Error sending message:", err);
+      let errorMessage = "Sorry, something went wrong. Please try again.";
+      
+      if (err.response) {
+        // Server responded with error
+        const serverError = err.response.data;
+        if (serverError?.message) {
+          errorMessage = serverError.message;
+          if (serverError.error) {
+            errorMessage += `: ${serverError.error}`;
+          }
+        } else {
+          errorMessage = `Error: ${err.response.status} - ${err.response.statusText}`;
+        }
+      } else if (err.request) {
+        // Request made but no response
+        errorMessage = "Unable to connect to server. Please check your connection.";
+      } else {
+        // Error setting up request
+        errorMessage = `Error: ${err.message}`;
+      }
+      
+      setMessages((msgs) => [...msgs, { sender: "bot", text: errorMessage }]);
     }
   };
 

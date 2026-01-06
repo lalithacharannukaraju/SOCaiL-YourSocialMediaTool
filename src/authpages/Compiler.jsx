@@ -11,9 +11,9 @@ function Compiler() {
   const [tiktokTrends, setTiktokTrends] = useState([]);
   const [currentTrends, setCurrentTrends] = useState(null);
   const [incrementalIndex, setIncrementalIndex] = useState(0); // For incremental rendering
-  // const [userQuery, setUserQuery] = useState(''); // Removed
-  // const [aiAnswer, setAiAnswer] = useState(''); // Removed
-  // const [loadingAI, setLoadingAI] = useState(false); // Removed
+  const [userQuery, setUserQuery] = useState(''); // User question for RAG
+  const [aiAnswer, setAiAnswer] = useState(''); // AI/RAG response
+  const [loadingAI, setLoadingAI] = useState(false); // Loading state for Ask AI
 
   // Fetch Twitter trends
   useEffect(() => {
@@ -31,24 +31,30 @@ function Compiler() {
 
   // Fetch Instagram trends
   useEffect(() => {
-    fetch(`${BACKEND_URL}/api/instagram-trends`)
-      .then((response) => response.json())
+    fetch(`${BACKEND_URL}/instagram-trends`)
+      .then((response) => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
       .then((data) => setInstagramTrends(data))
       .catch((error) => console.error('Error fetching Instagram trends:', error));
   }, []);
 
   // Fetch TikTok trends
   useEffect(() => {
-    fetch(`${BACKEND_URL}/api/tiktok-trends`)
-      .then((response) => response.json())
+    fetch(`${BACKEND_URL}/tiktok-trends`)
+      .then((response) => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
       .then((data) => setTiktokTrends(data))
       .catch((error) => console.error('Error fetching TikTok trends:', error));
   }, []);
 
   // Sort trends by ranking for incremental view (Twitter)
   const sortedTwitterTrends = Array.isArray(twitterTrends)
-    ? twitterTrends
-    : Object.entries(twitterTrends).sort((a, b) => b[1] - a[1]);
+    ? [...twitterTrends].sort((a, b) => parseInt(b.Count) - parseInt(a.Count))
+    : [];
 
   // Twitter Trends Incremental View
   const IncrementalTrendView = () => {
@@ -77,8 +83,8 @@ function Compiler() {
             >
               <div className="text-blue-500 font-bold text-3xl">{index + 1}</div>
               <div className="flex-grow">
-                <h3 className="text-xl font-semibold text-gray-800 truncate">{trend.Trend || trend[0]}</h3>
-                <p className="text-sm text-gray-500">Popularity: {trend.Count || trend[1]}</p>
+                <h3 className="text-xl font-semibold text-gray-800 truncate">{trend.Trend}</h3>
+                <p className="text-sm text-gray-500">Popularity: {trend.Count}</p>
               </div>
             </div>
           ))}
@@ -188,29 +194,57 @@ function Compiler() {
     );
   };
 
-  // Handle user RAG/AI query
-  // const handleAskAI = async () => { // Removed
-  //   setLoadingAI(true); // Removed
-  //   setAiAnswer(''); // Removed
-  //   try { // Removed
-  //     const response = await fetch(`${GEMINI_URL}/askai`, { // Removed
-  //       method: 'POST', // Removed
-  //       headers: { 'Content-Type': 'application/json' }, // Removed
-  //       body: JSON.stringify({ prompt: userQuery }), // Removed
-  //     }); // Removed
-  //     const data = await response.json(); // Removed
-  //     setAiAnswer(data.content || data.error || 'No answer received.'); // Removed
-  //   } catch (error) { // Removed
-  //     setAiAnswer('Error contacting AI backend.'); // Removed
-  //   } finally { // Removed
-  //     setLoadingAI(false); // Removed
-  //   } // Removed
-  // }; // Removed
+  // Handle user RAG/AI query powered by the Gemini RAG service (Models/gemini.py)
+  const handleAskAI = async () => {
+    if (!userQuery.trim()) return;
+    setLoadingAI(true);
+    setAiAnswer('');
+    try {
+      const response = await fetch(`${GEMINI_URL}/askai`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: userQuery }),
+      });
+      const data = await response.json();
+      setAiAnswer(data.content || data.error || 'No answer received.');
+    } catch (error) {
+      console.error('Error contacting Gemini RAG backend:', error);
+      setAiAnswer('Error contacting AI backend.');
+    } finally {
+      setLoadingAI(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-50 py-10 px-4">
-      {/* RAG/AI Query Section */}
-      {/* Removed Ask AI section */}
+      {/* RAG/AI Query Section (Gemini RAG over Twitter trends) */}
+      <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 mb-10">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Ask the Trend Compiler (RAG)</h2>
+        <p className="text-sm text-gray-500 mb-3">
+          Ask questions about what&apos;s trending. Your query will be answered using the RAG model that reads the latest Twitter trends.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch">
+          <input
+            type="text"
+            value={userQuery}
+            onChange={(e) => setUserQuery(e.target.value)}
+            placeholder="e.g. What kind of content should I post around the top 5 trends?"
+            className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={handleAskAI}
+            disabled={loadingAI}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg disabled:opacity-60"
+          >
+            {loadingAI ? 'Thinking...' : 'Ask AI'}
+          </button>
+        </div>
+        {aiAnswer && (
+          <div className="mt-4 border border-blue-100 bg-blue-50 rounded-lg p-4 text-gray-800 whitespace-pre-line">
+            {aiAnswer}
+          </div>
+        )}
+      </div>
 
       {/* Main Trend Selection UI */}
       {currentTrends === null ? (
