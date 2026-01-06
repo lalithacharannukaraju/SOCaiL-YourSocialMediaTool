@@ -21,7 +21,7 @@ Create a `.env` file in the `Backend` directory with the following variables:
 # MongoDB Connection String
 MONGODB_URI=mongodb://localhost:27017/socail
 # OR use MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/socail
+# MONGODB_URI=mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER_URL>/<DATABASE_NAME>
 
 # JWT Secret Key (generate a random string)
 JWT_SECRET=your_super_secret_jwt_key_here_change_this
