@@ -51,9 +51,7 @@ How to Run This Application
 
 --------------------------------------
 4. Python Models & Scrapers
-   
-- If you want to run the Gemini model or scrapers, run the relevant Python scripts in the Models directory (e.g., gemini.py, scrape.py) using Python 3.
 
-- Go to /Backend/Models/ and execute 'python gemini.py' for model and 'python scrape.py' for scrapper
+- Go to /Backend/Models/ and execute 'python gemini.py' for model and 'twitter_scraper.py' for scrapper
 
 
