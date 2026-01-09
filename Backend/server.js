@@ -30,7 +30,7 @@ const authenticateUser = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { ...decoded, id: decoded.userId }; // Ensure we have userId available as id
+    req.user = {id : decoded.id}; // Ensure we have userId available as id
     next();
   } catch (error) {
     console.error("Auth error:", error);
@@ -113,7 +113,7 @@ const isSameDay = (date1, date2) => {
          date1.getDate() === date2.getDate();
 };
 
-app.use("/progress", progressRouter);
+app.use("/dashboard", progressRouter);
 
 // Other Routes
 app.use("/auth", authRoutes);

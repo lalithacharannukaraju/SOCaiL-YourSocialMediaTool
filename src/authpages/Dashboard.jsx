@@ -47,7 +47,7 @@ function Dashboard() {
         const token = localStorage.getItem("token");
         const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
         // Fetch progress
-        const progressRes = await axios.get(`${BACKEND_URL}/progress`, {
+        const progressRes = await axios.get(`${BACKEND_URL}/dashboard`, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });

@@ -38,13 +38,13 @@ export const processQuery = async (req, res) => {
     // Save to MongoDB
     try {
       const chatLog = new Chat({
-        userId: req.user.userId,
+        userId: req.user.id,
         query,
         response: chatResponse,
         timestamp: new Date(),
       });
       await chatLog.save();
-      console.log(`[ChatController] Chat saved to MongoDB for user: ${req.user.userId}`);
+      console.log(`[ChatController] Chat saved to MongoDB for user: ${req.user.id}`);
     } catch (dbError) {
       console.error("[ChatController] Error saving to MongoDB:", dbError);
       // Continue even if DB save fails - still return the response
@@ -87,7 +87,7 @@ export const processQuery = async (req, res) => {
 
 export const getChatHistory = async (req, res) => {
   try {
-    const chatHistory = await Chat.find({ userId: req.user.userId }).sort({
+    const chatHistory = await Chat.find({ userId: req.user.id }).sort({
       timestamp: 1,
     });
     res.json(chatHistory);
